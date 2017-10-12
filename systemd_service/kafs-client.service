@@ -1,0 +1,18 @@
+[Unit]
+Description=Linux Kernel AFS Client
+Wants=network-online.target
+After=network-online.target
+Before=remote-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+EnvironmentFile=/etc/default/kafs-client
+ExecStartPre=/bin/bash -c '/sbin/modprobe kafs; /bin/sleep 1; /bin/echo "add aaker.org 192.168.1.3" >|/proc/fs/afs/cells; /bin/sleep 25; /bin/mount -t afs "#aaker.org:root.afs." /afs'
+ExecStartPre=/bin/mount -t afs "#aaker.org:root.cell." /afs/aaker.org
+ExecStop=/bin/umount /afs/aaker.org
+ExecStop=/bin/umount /afs
+KillMode=none
+
+[Install]
+WantedBy=multi-user.target remote-fs.target
